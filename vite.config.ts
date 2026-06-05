@@ -1,12 +1,12 @@
-import { defineConfig, loadEnv } from "vite";
-import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
 import { resolve } from "path";
+import { defineConfig, loadEnv } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  
+
   return {
     plugins: [react(), tailwindcss()],
     resolve: {
@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      host: env.VITE_HOST || "0.0.0.0", // WSLでは0.0.0.0を使用
+      host: env.VITE_HOST || "localhost",
       port: parseInt(env.VITE_PORT || "5173"),
       watch: {
         usePolling: true, // WSLでのファイル監視に必要
