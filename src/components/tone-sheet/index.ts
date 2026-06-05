@@ -1,4 +1,4 @@
-export { default as ToneSheet } from './tone-sheet';
-export { ToneSheetsContainer } from './tone-sheets-container';
-export { default as ColorGrid } from './color-grid';
-export { default as ColorCell } from './color-cell';
+export { ColorCell } from "./color-cell";
+export { ColorGrid } from "./color-grid";
+export { ToneSheet } from "./tone-sheet";
+export { ToneSheetsContainer } from "./tone-sheets-container";

@@ -1,13 +1,19 @@
-import React from "react";
-import { ColorGridProps } from "@/types";
-import ColorCell from "./color-cell";
-import { useHover } from "@/hooks";
-import { ColorTooltip } from "@/components/ui/color-tooltip";
+import { Color } from "@/types";
 import { calculateGridDimensions } from "@/utils/grid";
+import React from "react";
+import { ColorCell } from "./color-cell";
 
-const ColorGrid: React.FC<ColorGridProps> = ({ colors }) => {
-  const { hoverState, handleHover } = useHover();
+type ColorGridProps = {
+  colors: Color[][];
+  canCopy: boolean;
+  onColorHover: (color: Color | null) => void;
+};
 
+export const ColorGrid = React.memo(function ColorGrid({
+  colors,
+  canCopy,
+  onColorHover,
+}: ColorGridProps) {
   if (colors.length === 0) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -19,17 +25,19 @@ const ColorGrid: React.FC<ColorGridProps> = ({ colors }) => {
   const { cellWidth, cellHeight, rows, cols } = calculateGridDimensions(colors);
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center" style={{ perspective: '1000px' }}>
-      {/* Color grid */}
-      <div 
+    <div
+      className="relative flex h-full w-full items-center justify-center"
+      style={{ perspective: "1000px" }}
+    >
+      <div
         className="grid touch-manipulation"
         style={{
           gridTemplateColumns: `repeat(${cols}, ${cellWidth}px)`,
           gridTemplateRows: `repeat(${rows}, ${cellHeight}px)`,
-          gap: '2px',
-          transform: 'skewY(45deg)', // Skew entire ToneSheet to create parallelogram shape
-          transformStyle: 'preserve-3d',
-          transformOrigin: 'center center'
+          gap: "2px",
+          transform: "skewY(45deg)",
+          transformStyle: "preserve-3d",
+          transformOrigin: "center center",
         }}
       >
         {colors.map((row, rowIndex) =>
@@ -37,19 +45,13 @@ const ColorGrid: React.FC<ColorGridProps> = ({ colors }) => {
             <ColorCell
               key={`${rowIndex}-${colIndex}`}
               color={color}
-              showTooltip={false} // We'll use our custom tooltip
-              onColorHover={(color, event) => handleHover(color, event as React.MouseEvent)}
+              canCopy={canCopy}
+              showTooltip={false}
+              onColorHover={onColorHover}
             />
-          ))
+          )),
         )}
       </div>
-
-      {/* Responsive tooltip */}
-      {hoverState.color && hoverState.position && (
-        <ColorTooltip color={hoverState.color} position={hoverState.position} />
-      )}
     </div>
   );
-};
-
-export default React.memo(ColorGrid);
+});
