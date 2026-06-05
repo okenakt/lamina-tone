@@ -1,2 +1,2 @@
-export { useAppState } from './useAppState';
-export { useHover } from './useHover';
+export { useColorCube } from "./use-color-cube";
+export { useHover } from "./useHover";
