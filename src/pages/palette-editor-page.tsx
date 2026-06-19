@@ -1,0 +1,132 @@
+import {
+  SliderAxisControl,
+  WheelAxisControl,
+} from "@/components/axis-controls";
+import { ColorExportModal } from "@/components/export";
+import { ToneSheetsContainer } from "@/components/tone-sheet";
+import { Button } from "@/components/ui/button";
+import { useColorCube } from "@/hooks";
+import {
+  generateColorGrid,
+  oklchToColor,
+  sampleAxis,
+} from "@/lib/color-engine";
+import { Color, ColorAxis } from "@/types";
+import { useMemo, useState } from "react";
+
+type PaletteEditorPageProps = {
+  seedColor: Color;
+  onReset: () => void;
+};
+
+const toEngineAxis = (axis: ColorAxis): ColorAxis => ({
+  range: { min: axis.range.min / 100, max: axis.range.max / 100 },
+  num: axis.num,
+});
+
+export const PaletteEditorPage = ({
+  seedColor,
+  onReset,
+}: PaletteEditorPageProps) => {
+  const { cube, resizeAxis, setRange } = useColorCube(seedColor);
+  const [activeSheetIndex, setActiveSheetIndex] = useState(-1);
+
+  const activeIndex = Math.min(activeSheetIndex, cube.hue.num - 1);
+  const hues = sampleAxis(cube.hue, true);
+
+  const grids = useMemo(() => {
+    const lightness = toEngineAxis(cube.lightness);
+    const chroma = toEngineAxis(cube.chroma);
+    return hues.map((hue) => generateColorGrid(hue, lightness, chroma));
+  }, [hues, cube.lightness, cube.chroma]);
+
+  const hueGradient = useMemo(() => {
+    const lCenter = (cube.lightness.range.min + cube.lightness.range.max) / 200;
+    const cCenter = (cube.chroma.range.min + cube.chroma.range.max) / 200;
+    return (v: number) => oklchToColor({ l: lCenter, c: cCenter, h: v }).hex;
+  }, [cube.lightness.range, cube.chroma.range]);
+
+  const lightnessStrips = useMemo(() => {
+    const cCenter = (cube.chroma.range.min + cube.chroma.range.max) / 200;
+    return hues.map(
+      (hue) => (v: number) =>
+        oklchToColor({ l: v / 100, c: cCenter, h: hue }).hex,
+    );
+  }, [hues, cube.chroma.range]);
+
+  const chromaStrips = useMemo(() => {
+    const lCenter = (cube.lightness.range.min + cube.lightness.range.max) / 200;
+    return hues.map(
+      (hue) => (v: number) =>
+        oklchToColor({ l: lCenter, c: v / 100, h: hue }).hex,
+    );
+  }, [hues, cube.lightness.range]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
+      <div className="shrink-0">
+        <Button
+          onClick={onReset}
+          className="border border-gray-200 px-3 py-1.5 text-sm text-gray-500 hover:border-gray-300 hover:text-gray-700 focus:ring-gray-300"
+        >
+          ← Back
+        </Button>
+      </div>
+
+      <div className="flex h-full min-h-0 w-full flex-1 items-center justify-center overflow-hidden">
+        <ToneSheetsContainer
+          grids={grids}
+          activeSheetIndex={activeIndex}
+          onSheetClick={setActiveSheetIndex}
+          onContainerClick={() => setActiveSheetIndex(-1)}
+        />
+      </div>
+
+      <div className="flex flex-col items-stretch gap-2 md:flex-row">
+        <WheelAxisControl
+          title="Hue (Depth)"
+          size={cube.hue.num}
+          range={cube.hue.range}
+          onSizeChange={(change) => resizeAxis("hue", change)}
+          onRangeChange={(min, max) => setRange("hue", min, max)}
+          createGradient={hueGradient}
+        />
+
+        <SliderAxisControl
+          title="Lightness (Vertical)"
+          size={cube.lightness.num}
+          range={cube.lightness.range}
+          onSizeChange={(change) => resizeAxis("lightness", change)}
+          onRangeChange={(min, max) => setRange("lightness", min, max)}
+          createStrips={lightnessStrips}
+        />
+
+        <SliderAxisControl
+          title="Chroma (Horizontal)"
+          size={cube.chroma.num}
+          range={cube.chroma.range}
+          onSizeChange={(change) => resizeAxis("chroma", change)}
+          onRangeChange={(min, max) => setRange("chroma", min, max)}
+          createStrips={chromaStrips}
+        />
+      </div>
+
+      <div className="flex justify-center">
+        <Button
+          className="bg-linear-135 from-cyan-500 to-purple-500 text-white hover:brightness-110"
+          onClick={() => setIsModalOpen(true)}
+        >
+          Export
+        </Button>
+        {isModalOpen && (
+          <ColorExportModal
+            onClose={() => setIsModalOpen(false)}
+            grids={grids}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
