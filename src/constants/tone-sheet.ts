@@ -9,9 +9,5 @@ export const GRID_CONTROLS = {
 
 export const AXIS_LIMITS = {
   minSize: 1,
-  maxSize: 16,
-} as const;
-
-export const FEEDBACK = {
-  copyDisplayDuration: 1000, // milliseconds
+  maxSize: 9,
 } as const;

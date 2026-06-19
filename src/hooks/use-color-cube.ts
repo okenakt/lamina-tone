@@ -1,4 +1,4 @@
-import { AXIS_LIMITS } from "@/constants/ui";
+import { AXIS_LIMITS } from "@/constants/tone-sheet";
 import { initialRangesFromColor } from "@/lib/color-engine";
 import { AxisType, Color, ColorCube } from "@/types";
 import { useState } from "react";
