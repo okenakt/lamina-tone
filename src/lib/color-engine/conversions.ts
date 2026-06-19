@@ -1,19 +1,39 @@
-import { Color as ColorType } from "@/types";
+import { Color as ColorType, OKLCH, RGB } from "@/types";
 import Color from "colorjs.io";
 
-// Engine interface uses normalized C (0-1) where 1 = MAX_CHROMA.
 export const MAX_CHROMA = 0.4;
 
-export function rgbToColor(r: number, g: number, b: number): ColorType {
-  const color = new Color("srgb", [r / 255, g / 255, b / 255]);
+export function rgbToColor(rgb: RGB): ColorType {
+  const color = new Color("srgb", [rgb.r / 255, rgb.g / 255, rgb.b / 255]);
   // colorjs.io v0.6 coords are (number | null)[]; null is a powerless component
   // (e.g. an achromatic hue), which we treat as 0.
   const [L, C, h] = color.to("oklch").coords;
   return {
-    hex: `#${[r, g, b].map((c) => c.toString(16).padStart(2, "0")).join("")}`,
-    rgb: [r, g, b],
-    oklch: [L ?? 0, (C ?? 0) / MAX_CHROMA, h == null || isNaN(h) ? 0 : h],
+    hex: `#${[rgb.r, rgb.g, rgb.b].map((c) => c.toString(16).padStart(2, "0")).join("")}`,
+    rgb: { r: rgb.r, g: rgb.g, b: rgb.b },
+    oklch: {
+      l: L ?? 0,
+      c: (C ?? 0) / MAX_CHROMA,
+      h: h == null || isNaN(h) ? 0 : h,
+    },
   };
+}
+
+export function hexToColor(hex: string): ColorType | null {
+  const m = /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.exec(hex.trim());
+  if (!m) return null;
+  const h =
+    m[1].length === 3
+      ? m[1]
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : m[1];
+  return rgbToColor({
+    r: parseInt(h.slice(0, 2), 16),
+    g: parseInt(h.slice(2, 4), 16),
+    b: parseInt(h.slice(4, 6), 16),
+  });
 }
 
 function isInSRGBGamut(L: number, C_native: number, h: number): boolean {
@@ -26,32 +46,29 @@ function isInSRGBGamut(L: number, C_native: number, h: number): boolean {
   }
 }
 
-// Convert OKLCH to Color. C is normalized (0-1), where 1 = MAX_CHROMA.
-// Out-of-gamut colors: C is reduced via binary search, preserving L and h.
-export function oklchToColor(L: number, C: number, h: number): ColorType {
-  let finalC_native = C * MAX_CHROMA;
+export function oklchToColor(oklch: OKLCH): ColorType {
+  const { l, c, h } = oklch;
+  let finalC_native = c * MAX_CHROMA;
 
-  if (!isInSRGBGamut(L, finalC_native, h)) {
+  if (!isInSRGBGamut(l, finalC_native, h)) {
     let lo = 0,
       hi = finalC_native;
     for (let i = 0; i < 20; i++) {
       const mid = (lo + hi) / 2;
-      if (isInSRGBGamut(L, mid, h)) lo = mid;
+      if (isInSRGBGamut(l, mid, h)) lo = mid;
       else hi = mid;
     }
     finalC_native = lo;
   }
 
-  const srgb = new Color("oklch", [L, finalC_native, h]).to("srgb").coords;
-  const rgb: [number, number, number] = [
-    Math.max(0, Math.min(255, Math.round((srgb[0] ?? 0) * 255))),
-    Math.max(0, Math.min(255, Math.round((srgb[1] ?? 0) * 255))),
-    Math.max(0, Math.min(255, Math.round((srgb[2] ?? 0) * 255))),
-  ];
+  const srgb = new Color("oklch", [l, finalC_native, h]).to("srgb").coords;
+  const r = Math.max(0, Math.min(255, Math.round((srgb[0] ?? 0) * 255)));
+  const g = Math.max(0, Math.min(255, Math.round((srgb[1] ?? 0) * 255)));
+  const b = Math.max(0, Math.min(255, Math.round((srgb[2] ?? 0) * 255)));
   return {
-    hex: `#${rgb.map((c) => c.toString(16).padStart(2, "0")).join("")}`,
-    rgb,
-    oklch: [L, finalC_native / MAX_CHROMA, h],
+    hex: `#${[r, g, b].map((c) => c.toString(16).padStart(2, "0")).join("")}`,
+    rgb: { r, g, b },
+    oklch: { l, c: finalC_native / MAX_CHROMA, h },
   };
 }
 

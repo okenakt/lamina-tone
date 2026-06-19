@@ -1,10 +1,7 @@
-export {
-  generateRandomColors,
-  getHueFromColor,
-  initialRangesFromColor,
-} from "./analysis";
+export { generateRandomColor, initialRangesFromColor } from "./analysis";
 export {
   MAX_CHROMA,
+  hexToColor,
   oklchToColor,
   oklchToRgb,
   rgbToColor,

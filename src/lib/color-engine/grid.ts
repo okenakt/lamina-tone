@@ -1,10 +1,6 @@
 import { ColorAxis, Color as ColorType } from "@/types";
 import { oklchToColor } from "./conversions";
 
-// Generate one ToneSheet's color grid for a single hue.
-// lightness/chroma axes carry engine-normalized ranges (L 0-1, C 0-1) and the
-// sample count per axis: lightness.num = rows, chroma.num = cols.
-// Row 0 = highest lightness (top of visual grid).
 export function generateColorGrid(
   hue: number,
   lightness: ColorAxis,
@@ -27,7 +23,7 @@ export function generateColorGrid(
           ? (cr.min + cr.max) / 2
           : cr.min + ((cr.max - cr.min) * j) / (cols - 1);
 
-      return oklchToColor(L, C, hue);
+      return oklchToColor({ l: L, c: C, h: hue });
     });
   });
 }
