@@ -1,30 +1,17 @@
 import { ColorTooltip } from "@/components/ui/color-tooltip";
-import { GRID_CONTROLS, TONESHEET_SIZE } from "@/constants/ui";
-import { useHover } from "@/hooks";
+import { GRID_CONTROLS, TONESHEET_SIZE } from "@/constants/tone-sheet";
 import { Color } from "@/types";
 import { useEffect, useRef, useState } from "react";
 import { ToneSheet } from "./tone-sheet";
+import { useTooltipState } from "./use-tooltip-state";
 
 const W = TONESHEET_SIZE.width;
 const H = TONESHEET_SIZE.height;
 const CONTAINER_HEIGHT = (H + W) * 1.1;
 const VERTICAL_OFFSET = CONTAINER_HEIGHT / 2 - H / 2;
 
-// Spacing between inactive sheets when another sheet is active (tight pack)
 const COMPACT_SPACING = 10;
 
-/**
- * Compute the left offset (relative to startX) for sheet at `index`.
- *
- * No active (activeIndex === -1):
- *   each sheet steps by normalSpacing (40px) — a relaxed stack.
- *
- * Active sheet selected:
- *   - Sheets before active: compacted at COMPACT_SPACING intervals.
- *   - Active sheet: placed W px after the preceding sheet's position,
- *     creating a clear gap that visually separates it from the pile.
- *   - Sheets after active: W gap after active sheet, then compacted at COMPACT_SPACING.
- */
 function sheetOffset(
   index: number,
   activeIndex: number,
@@ -64,7 +51,8 @@ export const ToneSheetsContainer = ({
 }: ToneSheetsContainerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(600);
-  const { hoveredColor, handleHover } = useHover();
+  const { tooltipProps, onColorHover, onColorCopy, pointerProps } =
+    useTooltipState(containerRef);
 
   useEffect(() => {
     const update = () => {
@@ -96,9 +84,10 @@ export const ToneSheetsContainer = ({
       ref={containerRef}
       className="relative flex h-full w-full items-center overflow-hidden"
       onClick={onContainerClick}
+      {...pointerProps}
     >
       <div
-        className="relative flex-shrink-0"
+        className="relative isolate shrink-0"
         style={{
           width: `${containerWidth}px`,
           height: `${CONTAINER_HEIGHT}px`,
@@ -129,15 +118,15 @@ export const ToneSheetsContainer = ({
               <ToneSheet
                 colors={colors}
                 isActive={isActive}
-                onColorHover={handleHover}
+                onColorHover={isActive ? onColorHover : undefined}
+                onColorCopy={isActive ? onColorCopy : undefined}
               />
             </div>
           );
         })}
       </div>
 
-      {/* Color info fixed at bottom-left of display area */}
-      {hoveredColor && <ColorTooltip color={hoveredColor} />}
+      {tooltipProps && <ColorTooltip {...tooltipProps} />}
     </div>
   );
 };

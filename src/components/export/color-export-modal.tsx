@@ -3,7 +3,6 @@ import { Color } from "@/types";
 import { useState } from "react";
 
 type ColorExportModalProps = {
-  isOpen: boolean;
   onClose: () => void;
   grids: Color[][][]; // one generated color grid per hue sheet
 };
@@ -11,11 +10,7 @@ type ColorExportModalProps = {
 type ExportFormat = "json" | "typescript" | "css" | "python";
 type ColorFormat = "hex" | "rgb";
 
-export const ColorExportModal = ({
-  isOpen,
-  onClose,
-  grids,
-}: ColorExportModalProps) => {
+export const ColorExportModal = ({ onClose, grids }: ColorExportModalProps) => {
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>("json");
   const [selectedColorFormat, setSelectedColorFormat] =
     useState<ColorFormat>("hex");
@@ -26,7 +21,7 @@ export const ColorExportModal = ({
     const createPaletteObject = () => {
       const palette: Record<
         string,
-        Record<string, Record<string, string>>
+        Record<string, Record<string, string | [number, number, number]>>
       > = {};
 
       grids.forEach((sheet, hIndex) => {
@@ -40,7 +35,9 @@ export const ColorExportModal = ({
           row.forEach((color, cIndex) => {
             const cKey = `c-${cIndex}`;
             palette[hKey][lKey][cKey] =
-              selectedColorFormat === "hex" ? color.hex : color.rgb;
+              selectedColorFormat === "hex"
+                ? color.hex
+                : [color.rgb.r, color.rgb.g, color.rgb.b];
           });
         });
       });
@@ -62,10 +59,9 @@ export const ColorExportModal = ({
             tsOutput += `    "${lKey}": {\n`;
             Object.keys(palette[hKey][lKey]).forEach((cKey) => {
               const value = palette[hKey][lKey][cKey];
-              const formattedValue =
-                selectedColorFormat === "hex"
-                  ? `'${value}'`
-                  : `[${value.join(", ")}]`;
+              const formattedValue = Array.isArray(value)
+                ? `[${value.join(", ")}]`
+                : `'${value}'`;
               tsOutput += `      "${cKey}": ${formattedValue},\n`;
             });
             tsOutput += "    },\n";
@@ -85,10 +81,9 @@ export const ColorExportModal = ({
           Object.keys(cssPalette[hKey]).forEach((lKey) => {
             Object.keys(cssPalette[hKey][lKey]).forEach((cKey) => {
               const value = cssPalette[hKey][lKey][cKey];
-              const formattedValue =
-                selectedColorFormat === "hex"
-                  ? value
-                  : `rgb(${value.join(", ")})`;
+              const formattedValue = Array.isArray(value)
+                ? `rgb(${value.join(", ")})`
+                : value;
               cssOutput += `  --palette-${hKey}-${lKey}-${cKey}: ${formattedValue};\n`;
             });
           });
@@ -108,10 +103,9 @@ export const ColorExportModal = ({
             pyOutput += `        "${lKey}": {\n`;
             Object.keys(pyPalette[hKey][lKey]).forEach((cKey) => {
               const value = pyPalette[hKey][lKey][cKey];
-              const formattedValue =
-                selectedColorFormat === "hex"
-                  ? `"${value}"`
-                  : `(${value.join(", ")})`;
+              const formattedValue = Array.isArray(value)
+                ? `(${value.join(", ")})`
+                : `"${value}"`;
               pyOutput += `            "${cKey}": ${formattedValue},\n`;
             });
             pyOutput += "        },\n";
@@ -138,12 +132,9 @@ export const ColorExportModal = ({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="flex max-h-[90vh] w-full max-w-4xl flex-col rounded-lg bg-white shadow-xl">
-        {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-800">Export Colors</h2>
           <button
@@ -154,7 +145,6 @@ export const ColorExportModal = ({
           </button>
         </div>
 
-        {/* Format Selection */}
         <div className="border-b border-gray-200 p-6">
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2">
@@ -193,7 +183,6 @@ export const ColorExportModal = ({
           </div>
         </div>
 
-        {/* Code Display */}
         <div className="flex-1 overflow-hidden p-6">
           <div className="relative h-full">
             <pre className="h-full overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-4 font-mono text-sm break-words whitespace-pre-wrap">
@@ -202,12 +191,14 @@ export const ColorExportModal = ({
           </div>
         </div>
 
-        {/* Footer */}
         <div className="flex justify-end border-t border-gray-200 p-6">
           <Button
             onClick={handleCopy}
-            variant={copied ? "success" : "primary"}
-            size="md"
+            className={`px-4 py-2 text-sm text-white ${
+              copied
+                ? "bg-green-400 hover:bg-green-500 focus:ring-green-400"
+                : "bg-blue-400 hover:bg-blue-500 focus:ring-blue-400"
+            }`}
           >
             {copied ? "Copied!" : "Copy to Clipboard"}
           </Button>
