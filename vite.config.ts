@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      host: env.VITE_HOST || "localhost",
+      host: env.VITE_HOST || "0.0.0.0",
       port: parseInt(env.VITE_PORT || "5173"),
       watch: {
         usePolling: true, // WSLでのファイル監視に必要

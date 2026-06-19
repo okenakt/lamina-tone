@@ -33,7 +33,11 @@
       "Bash(npm prune *)",
       "Bash(echo \"exit=$?\")",
       "Bash(grep -vE \"\\\\\\(unchanged\\\\\\)$\")",
-      "Bash(echo \"\\(exit $?\\)\")"
+      "Bash(echo \"\\(exit $?\\)\")",
+      "Bash(sed -n '140,162p' src/components/export/color-export-modal.tsx)",
+      "Bash(sed -n '50,66p' src/components/error-boundary.tsx)",
+      "Bash(sed -n '58,75p' src/pages/palette-editor-page.tsx)",
+      "Bash(npx eslint *)"
     ],
     "deny": [],
     "ask": []

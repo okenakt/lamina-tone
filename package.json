@@ -37,10 +37,12 @@
     "node": "24.16.0"
   },
   "prettier": {
+    "organizeImportsSkipDestructiveCodeActions": true,
     "plugins": [
       "prettier-plugin-organize-imports",
       "prettier-plugin-tailwindcss"
     ],
+    "quoteProps": "consistent",
     "tailwindStylesheet": "./src/index.css"
   }
 }
