@@ -11,6 +11,7 @@ const CONTAINER_HEIGHT = (H + W) * 1.1;
 const VERTICAL_OFFSET = CONTAINER_HEIGHT / 2 - H / 2;
 
 const COMPACT_SPACING = 10;
+const ENTRY_OFFSET = W;
 
 function sheetOffset(
   index: number,
@@ -43,6 +44,67 @@ type ToneSheetsContainerProps = {
   onContainerClick: () => void;
 };
 
+type ToneSheetLayerProps = {
+  colors: Color[][];
+  index: number;
+  isActive: boolean;
+  isDimmed: boolean;
+  left: number;
+  zIndex: number;
+  entryDirection: "left" | "right";
+  onSheetClick: (index: number) => void;
+  onColorHover: (color: Color | null) => void;
+  onColorCopy: (color: Color) => void;
+};
+
+const ToneSheetLayer = ({
+  colors,
+  index,
+  isActive,
+  isDimmed,
+  left,
+  zIndex,
+  entryDirection,
+  onSheetClick,
+  onColorHover,
+  onColorCopy,
+}: ToneSheetLayerProps) => {
+  const [hasEntered, setHasEntered] = useState(false);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setHasEntered(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  const entryOffset = entryDirection === "left" ? -ENTRY_OFFSET : ENTRY_OFFSET;
+
+  return (
+    <div
+      className="absolute cursor-pointer transition-[left,transform,opacity] duration-300"
+      style={{
+        left: `${left}px`,
+        top: `${VERTICAL_OFFSET}px`,
+        width: `${W}px`,
+        height: `${H}px`,
+        zIndex,
+        opacity: hasEntered ? (isDimmed ? 0.3 : 1) : 0,
+        transform: `translateX(${hasEntered ? 0 : entryOffset}px)`,
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onSheetClick(index);
+      }}
+    >
+      <ToneSheet
+        colors={colors}
+        isActive={isActive}
+        onColorHover={isActive ? onColorHover : undefined}
+        onColorCopy={isActive ? onColorCopy : undefined}
+      />
+    </div>
+  );
+};
+
 export const ToneSheetsContainer = ({
   grids,
   activeSheetIndex,
@@ -50,6 +112,7 @@ export const ToneSheetsContainer = ({
   onContainerClick,
 }: ToneSheetsContainerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [initialSheetCount] = useState(() => grids.length);
   const [containerWidth, setContainerWidth] = useState(600);
   const { tooltipProps, onColorHover, onColorCopy, pointerProps } =
     useTooltipState(containerRef);
@@ -99,29 +162,21 @@ export const ToneSheetsContainer = ({
             startX + sheetOffset(index, activeSheetIndex, normalSpacing);
 
           return (
-            <div
+            <ToneSheetLayer
               key={index}
-              className="absolute cursor-pointer transition-all duration-300"
-              style={{
-                left: `${left}px`,
-                top: `${VERTICAL_OFFSET}px`,
-                width: `${W}px`,
-                height: `${H}px`,
-                zIndex: isActive ? 100 : n - index,
-                opacity: activeSheetIndex !== -1 && !isActive ? 0.3 : 1,
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                onSheetClick(index);
-              }}
-            >
-              <ToneSheet
-                colors={colors}
-                isActive={isActive}
-                onColorHover={isActive ? onColorHover : undefined}
-                onColorCopy={isActive ? onColorCopy : undefined}
-              />
-            </div>
+              colors={colors}
+              index={index}
+              isActive={isActive}
+              isDimmed={activeSheetIndex !== -1 && !isActive}
+              left={left}
+              zIndex={isActive ? 100 : n - index}
+              entryDirection={
+                index < initialSheetCount ? "left" : "right"
+              }
+              onSheetClick={onSheetClick}
+              onColorHover={onColorHover}
+              onColorCopy={onColorCopy}
+            />
           );
         })}
       </div>
