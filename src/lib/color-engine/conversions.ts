@@ -46,6 +46,10 @@ function isInSRGBGamut(L: number, C_native: number, h: number): boolean {
   }
 }
 
+export function isOklchInSrgbGamut({ l, c, h }: OKLCH): boolean {
+  return isInSRGBGamut(l, c * MAX_CHROMA, h);
+}
+
 export function oklchToColor(oklch: OKLCH): ColorType {
   const { l, c, h } = oklch;
   let finalC_native = c * MAX_CHROMA;

@@ -1,4 +1,5 @@
 import { Range } from "@/types";
+import { CSSProperties } from "react";
 import { AxisControl } from "./axis-control";
 import { RangeSlider } from "./range-slider";
 
@@ -9,6 +10,8 @@ type SliderAxisControlProps = {
   onSizeChange: (change: number) => void;
   onRangeChange: (min: number, max: number) => void;
   createStrips?: Array<(value: number) => string>;
+  message?: string;
+  messageStyle?: CSSProperties;
 };
 
 const GRADIENT_SAMPLES = 10;
@@ -27,6 +30,8 @@ export const SliderAxisControl = ({
   onSizeChange,
   onRangeChange,
   createStrips,
+  message,
+  messageStyle,
 }: SliderAxisControlProps) => (
   <AxisControl title={title} size={size} onSizeChange={onSizeChange}>
     <div className="flex w-full flex-col gap-1">
@@ -64,6 +69,11 @@ export const SliderAxisControl = ({
           </div>
         )}
       </RangeSlider>
+      {message && (
+        <p className="text-xs" style={messageStyle}>
+          {message}
+        </p>
+      )}
     </div>
   </AxisControl>
 );

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useColorCube } from "@/hooks";
 import {
   generateColorGrid,
+  isOklchInSrgbGamut,
   oklchToColor,
   sampleAxis,
 } from "@/lib/color-engine";
@@ -38,6 +39,16 @@ export const PaletteEditorPage = ({
     const lightness = toEngineAxis(cube.lightness);
     const chroma = toEngineAxis(cube.chroma);
     return hues.map((hue) => generateColorGrid(hue, lightness, chroma));
+  }, [hues, cube.lightness, cube.chroma]);
+
+  const hasOutOfGamutColors = useMemo(() => {
+    const lightnesses = sampleAxis(toEngineAxis(cube.lightness));
+    const chromas = sampleAxis(toEngineAxis(cube.chroma));
+    return hues.some((hue) =>
+      lightnesses.some((l) =>
+        chromas.some((c) => !isOklchInSrgbGamut({ l, c, h: hue })),
+      ),
+    );
   }, [hues, cube.lightness, cube.chroma]);
 
   const hueGradient = useMemo(() => {
@@ -110,6 +121,12 @@ export const PaletteEditorPage = ({
           onSizeChange={(change) => resizeAxis("chroma", change)}
           onRangeChange={(min, max) => setRange("chroma", min, max)}
           createStrips={chromaStrips}
+          message={
+            hasOutOfGamutColors
+              ? "⚠ Gamut mapping may reduce perceptual uniformity."
+              : undefined
+          }
+          messageStyle={{ color: "#b45309" }}
         />
       </div>
 
