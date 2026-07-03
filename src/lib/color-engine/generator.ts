@@ -46,16 +46,16 @@ export function initialRangesFromColor(color: Color): {
   const { l: L, c: C, h } = color.oklch;
   return {
     lightnessRange: {
-      min: Math.max(0, L - 0.25),
-      max: Math.min(1, L + 0.25),
+      min: Math.max(0, L - 0.1),
+      max: Math.min(1, L + 0.1),
     },
     chromaRange: {
-      min: Math.max(0, C - 0.25),
-      max: Math.min(1, C + 0.25),
+      min: Math.max(0, C - 0.1),
+      max: Math.min(1, C + 0.1),
     },
     hueRange: {
-      min: (h - 90 + 360) % 360,
-      max: (h + 90) % 360,
+      min: (h - 60 + 360) % 360,
+      max: (h + 60) % 360,
     },
   };
 }
