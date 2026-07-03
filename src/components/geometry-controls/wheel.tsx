@@ -2,9 +2,10 @@ import type { CSSProperties, ReactNode } from "react";
 import { Geometry } from "./geometry";
 import { Track } from "./track";
 
+// Math convention: 0° on the right (+x axis), increasing counterclockwise.
 const circlePoint = (cx: number, deg: number, r: number) => {
   const rad = (deg * Math.PI) / 180;
-  return { x: cx + r * Math.sin(rad), y: cx - r * Math.cos(rad) };
+  return { x: cx + r * Math.cos(rad), y: cx - r * Math.sin(rad) };
 };
 
 const pointerAngle = (
@@ -13,7 +14,7 @@ const pointerAngle = (
   clientX: number,
   clientY: number,
 ) =>
-  ((Math.atan2(clientX - rect.left - cx, -(clientY - rect.top - cx)) * 180) /
+  ((Math.atan2(-(clientY - rect.top - cx), clientX - rect.left - cx) * 180) /
     Math.PI +
     360) %
   360;

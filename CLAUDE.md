@@ -66,8 +66,8 @@ generation. Hue remains in degrees.
 ### Grid Generation
 
 `generateColorGrid` independently samples the requested Lightness and Chroma
-ranges at equal intervals. Hue sheets are sampled clockwise with wrap-around
-support through `sampleAxis`.
+ranges at equal intervals. Hue sheets are sampled in increasing-hue order with
+wrap-around support through `sampleAxis`.
 
 For every requested OKLCH color, `oklchToColor`:
 
@@ -97,7 +97,9 @@ objects provide:
 `Slider`, `Wheel`, and `Pad` adapt that mechanism to their respective shapes.
 `RangeSlider` and `RangeWheel` compose those primitives for axis controls.
 
-Hue ranges are directed clockwise arcs and may wrap through 0°. Lightness and
+Hue ranges are directed increasing-hue arcs and may wrap through 0°. On screen
+the wheels follow the math convention: 0° on the right, counterclockwise.
+Lightness and
 Chroma ranges are ordinary ordered linear ranges. Axis sizes are limited by
 `AXIS_LIMITS` in `src/constants/tone-sheet.ts`.
 

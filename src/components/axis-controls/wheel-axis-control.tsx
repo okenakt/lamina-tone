@@ -21,13 +21,15 @@ export const WheelAxisControl = ({
   createGradient,
   disabled,
 }: WheelAxisControlProps) => {
-  const ringGradient = `conic-gradient(from 0deg, ${Array.from(
+  // Hue runs counterclockwise from the right, so the (clockwise) conic
+  // gradient starts at 90° and samples hues in decreasing order.
+  const ringGradient = `conic-gradient(from 90deg, ${Array.from(
     { length: 72 },
     (_, i) => {
-      const v = (i * 5 + 2.5) % 360;
+      const v = (360 - (i * 5 + 2.5)) % 360;
       return `${createGradient(v)} ${i * 5}deg`;
     },
-  ).join(", ")}, ${createGradient(2.5)} 360deg)`;
+  ).join(", ")}, ${createGradient(357.5)} 360deg)`;
   return (
     <AxisControl
       title={title}

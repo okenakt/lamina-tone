@@ -12,14 +12,17 @@ type ColorPickerProps = {
   rectRes?: number;
 };
 
+// conic-gradient always runs clockwise from its start angle, while hue runs
+// counterclockwise from the right, so start at 90° (screen right) and walk
+// the stops in decreasing hue order.
 const hueGradient = (l: number, c: number): CSSProperties => {
   const hex = (h: number) => oklchToColor({ l, c, h }).hex;
   const stops = Array.from(
     { length: 72 },
-    (_, i) => `${hex(i * 5)} ${i * 5}deg`,
+    (_, i) => `${hex((360 - i * 5) % 360)} ${i * 5}deg`,
   ).join(", ");
   return {
-    background: `conic-gradient(from 0deg, ${stops}, ${hex(0)} 360deg)`,
+    background: `conic-gradient(from 90deg, ${stops}, ${hex(0)} 360deg)`,
   };
 };
 
