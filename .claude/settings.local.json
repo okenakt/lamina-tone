@@ -37,7 +37,12 @@
       "Bash(sed -n '140,162p' src/components/export/color-export-modal.tsx)",
       "Bash(sed -n '50,66p' src/components/error-boundary.tsx)",
       "Bash(sed -n '58,75p' src/pages/palette-editor-page.tsx)",
-      "Bash(npx eslint *)"
+      "Bash(npx eslint *)",
+      "Bash(command -v npx)",
+      "Bash(command -v chromium chromium-browser google-chrome google-chrome-stable)",
+      "Read(//home/tkaneko/.cache/**)",
+      "Bash(npm init *)",
+      "Bash(npm i *)"
     ],
     "deny": [],
     "ask": []

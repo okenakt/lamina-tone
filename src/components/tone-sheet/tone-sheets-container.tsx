@@ -170,9 +170,7 @@ export const ToneSheetsContainer = ({
               isDimmed={activeSheetIndex !== -1 && !isActive}
               left={left}
               zIndex={isActive ? 100 : n - index}
-              entryDirection={
-                index < initialSheetCount ? "left" : "right"
-              }
+              entryDirection={index < initialSheetCount ? "left" : "right"}
               onSheetClick={onSheetClick}
               onColorHover={onColorHover}
               onColorCopy={onColorCopy}
