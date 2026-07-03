@@ -115,8 +115,10 @@ copies its hex value.
 ## Export
 
 `ColorExportModal` receives the already-generated grids. It does not regenerate
-colors. Palette keys use `h-{index}`, `l-{index}`, and `c-{index}`. Supported
-outputs are JSON, TypeScript, CSS variables, and Python, with hex or RGB values.
+colors. Supported structures are nested objects, flat objects, and 3D arrays,
+with hex or RGB values. Object keys use `h{index}`, `l{index}`, and `c{index}`.
+Output is rendered line by line; lines that carry a color value show a swatch
+aligned to the right of that same row, so the preview tracks the text spatially.
 
 ## Technology
 

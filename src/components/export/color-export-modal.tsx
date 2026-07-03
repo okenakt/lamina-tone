@@ -1,130 +1,97 @@
 import { Button } from "@/components/ui/button";
 import { Color } from "@/types";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 type ColorExportModalProps = {
   onClose: () => void;
   grids: Color[][][]; // one generated color grid per hue sheet
 };
 
-type ExportFormat = "json" | "typescript" | "css" | "python";
+type ExportStructure = "nested" | "flat" | "array";
 type ColorFormat = "hex" | "rgb";
+// A single rendered line of output; `color` is set only on lines that carry a
+// color value, so the preview swatch can be aligned to that exact row.
+type Line = { text: string; color?: Color };
 
 export const ColorExportModal = ({ onClose, grids }: ColorExportModalProps) => {
-  const [selectedFormat, setSelectedFormat] = useState<ExportFormat>("json");
+  const [selectedStructure, setSelectedStructure] =
+    useState<ExportStructure>("nested");
   const [selectedColorFormat, setSelectedColorFormat] =
     useState<ColorFormat>("hex");
   const [copied, setCopied] = useState(false);
 
-  const formatColors = (format: ExportFormat): string => {
-    // Create palette object with h-Z, l-Y, c-X indexing
-    const createPaletteObject = () => {
-      const palette: Record<
-        string,
-        Record<string, Record<string, string | [number, number, number]>>
-      > = {};
+  const lines = useMemo<Line[]>(() => {
+    const valueLiteral = (color: Color): string =>
+      selectedColorFormat === "hex"
+        ? `"${color.hex}"`
+        : `[${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}]`;
 
-      grids.forEach((sheet, hIndex) => {
-        const hKey = `h-${hIndex}`;
-        palette[hKey] = {};
+    const comma = (index: number, length: number): string =>
+      index < length - 1 ? "," : "";
 
-        sheet.forEach((row, lIndex) => {
-          const lKey = `l-${lIndex}`;
-          palette[hKey][lKey] = {};
-
-          row.forEach((color, cIndex) => {
-            const cKey = `c-${cIndex}`;
-            palette[hKey][lKey][cKey] =
-              selectedColorFormat === "hex"
-                ? color.hex
-                : [color.rgb.r, color.rgb.g, color.rgb.b];
-          });
-        });
-      });
-
-      return palette;
-    };
-
-    switch (format) {
-      case "json":
-        return JSON.stringify(createPaletteObject(), null, 2);
-
-      case "typescript": {
-        const palette = createPaletteObject();
-        let tsOutput = "const palette = {\n";
-
-        Object.keys(palette).forEach((hKey) => {
-          tsOutput += `  "${hKey}": {\n`;
-          Object.keys(palette[hKey]).forEach((lKey) => {
-            tsOutput += `    "${lKey}": {\n`;
-            Object.keys(palette[hKey][lKey]).forEach((cKey) => {
-              const value = palette[hKey][lKey][cKey];
-              const formattedValue = Array.isArray(value)
-                ? `[${value.join(", ")}]`
-                : `'${value}'`;
-              tsOutput += `      "${cKey}": ${formattedValue},\n`;
+    switch (selectedStructure) {
+      case "nested": {
+        const out: Line[] = [{ text: "{" }];
+        grids.forEach((sheet, h) => {
+          out.push({ text: `  "h${h}": {` });
+          sheet.forEach((row, l) => {
+            out.push({ text: `    "l${l}": {` });
+            row.forEach((color, c) => {
+              out.push({
+                text: `      "c${c}": ${valueLiteral(color)}${comma(c, row.length)}`,
+                color,
+              });
             });
-            tsOutput += "    },\n";
+            out.push({ text: `    }${comma(l, sheet.length)}` });
           });
-          tsOutput += "  },\n";
+          out.push({ text: `  }${comma(h, grids.length)}` });
         });
-
-        tsOutput += "} as const;";
-        return tsOutput;
+        out.push({ text: "}" });
+        return out;
       }
 
-      case "css": {
-        const cssPalette = createPaletteObject();
-        let cssOutput = ":root {\n";
-
-        Object.keys(cssPalette).forEach((hKey) => {
-          Object.keys(cssPalette[hKey]).forEach((lKey) => {
-            Object.keys(cssPalette[hKey][lKey]).forEach((cKey) => {
-              const value = cssPalette[hKey][lKey][cKey];
-              const formattedValue = Array.isArray(value)
-                ? `rgb(${value.join(", ")})`
-                : value;
-              cssOutput += `  --palette-${hKey}-${lKey}-${cKey}: ${formattedValue};\n`;
-            });
+      case "flat": {
+        const out: Line[] = [{ text: "{" }];
+        const entries = grids.flatMap((sheet, h) =>
+          sheet.flatMap((row, l) =>
+            row.map((color, c) => ({ key: `h${h}-l${l}-c${c}`, color })),
+          ),
+        );
+        entries.forEach(({ key, color }, i) => {
+          out.push({
+            text: `  "${key}": ${valueLiteral(color)}${comma(i, entries.length)}`,
+            color,
           });
         });
-
-        cssOutput += "}";
-        return cssOutput;
+        out.push({ text: "}" });
+        return out;
       }
 
-      case "python": {
-        const pyPalette = createPaletteObject();
-        let pyOutput = "palette = {\n";
-
-        Object.keys(pyPalette).forEach((hKey) => {
-          pyOutput += `    "${hKey}": {\n`;
-          Object.keys(pyPalette[hKey]).forEach((lKey) => {
-            pyOutput += `        "${lKey}": {\n`;
-            Object.keys(pyPalette[hKey][lKey]).forEach((cKey) => {
-              const value = pyPalette[hKey][lKey][cKey];
-              const formattedValue = Array.isArray(value)
-                ? `(${value.join(", ")})`
-                : `"${value}"`;
-              pyOutput += `            "${cKey}": ${formattedValue},\n`;
+      case "array": {
+        const out: Line[] = [{ text: "[" }];
+        grids.forEach((sheet, h) => {
+          out.push({ text: "  [" });
+          sheet.forEach((row, l) => {
+            out.push({ text: "    [" });
+            row.forEach((color, c) => {
+              out.push({
+                text: `      ${valueLiteral(color)}${comma(c, row.length)}`,
+                color,
+              });
             });
-            pyOutput += "        },\n";
+            out.push({ text: `    ]${comma(l, sheet.length)}` });
           });
-          pyOutput += "    },\n";
+          out.push({ text: `  ]${comma(h, grids.length)}` });
         });
-
-        pyOutput += "}";
-        return pyOutput;
+        out.push({ text: "]" });
+        return out;
       }
-
-      default:
-        return "";
     }
-  };
+  }, [grids, selectedStructure, selectedColorFormat]);
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(formatColors(selectedFormat));
+      await navigator.clipboard.writeText(lines.map((l) => l.text).join("\n"));
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -134,7 +101,7 @@ export const ColorExportModal = ({ onClose, grids }: ColorExportModalProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="flex max-h-[90vh] w-full max-w-4xl flex-col rounded-lg bg-white shadow-xl">
+      <div className="flex h-[640px] max-h-[90vh] w-[720px] max-w-[95vw] flex-col rounded-lg bg-white shadow-xl">
         <div className="flex items-center justify-between border-b border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-800">Export Colors</h2>
           <button
@@ -149,19 +116,18 @@ export const ColorExportModal = ({ onClose, grids }: ColorExportModalProps) => {
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2">
               <label className="text-sm font-medium text-gray-700">
-                Format:
+                Structure:
               </label>
               <select
-                value={selectedFormat}
+                value={selectedStructure}
                 onChange={(e) =>
-                  setSelectedFormat(e.target.value as ExportFormat)
+                  setSelectedStructure(e.target.value as ExportStructure)
                 }
                 className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
               >
-                <option value="json">JSON</option>
-                <option value="typescript">TypeScript</option>
-                <option value="css">CSS Variables</option>
-                <option value="python">Python</option>
+                <option value="nested">Nested Object</option>
+                <option value="flat">Flat Object</option>
+                <option value="array">3D Array</option>
               </select>
             </div>
 
@@ -184,10 +150,22 @@ export const ColorExportModal = ({ onClose, grids }: ColorExportModalProps) => {
         </div>
 
         <div className="flex-1 overflow-hidden p-6">
-          <div className="relative h-full">
-            <pre className="h-full overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-4 font-mono text-sm break-words whitespace-pre-wrap">
-              <code>{formatColors(selectedFormat)}</code>
-            </pre>
+          <div className="h-full overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <div className="w-full font-mono text-sm">
+              {lines.map((line, i) => (
+                <div key={i} className="flex items-center gap-6">
+                  <span className="whitespace-pre text-gray-700">
+                    {line.text}
+                  </span>
+                  {line.color && (
+                    <span
+                      className="ml-auto h-4 w-16 rounded border border-gray-200"
+                      style={{ backgroundColor: line.color.hex }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
