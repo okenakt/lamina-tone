@@ -1,4 +1,3 @@
-export { generateRandomColor, initialRangesFromColor } from "./analysis";
 export {
   MAX_CHROMA,
   hexToColor,
@@ -7,5 +6,9 @@ export {
   oklchToRgb,
   rgbToColor,
 } from "./conversions";
-export { generateColorGrid } from "./grid";
+export {
+  generateColorGrid,
+  generateRandomColor,
+  initialRangesFromColor,
+} from "./generator";
 export { sampleAxis } from "./sample";
