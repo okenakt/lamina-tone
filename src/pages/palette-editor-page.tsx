@@ -132,7 +132,7 @@ export const PaletteEditorPage = ({
 
       <div className="flex justify-center">
         <Button
-          className="bg-linear-135 from-cyan-500 to-purple-500 text-white hover:brightness-110"
+          className="bg-blue-400 text-white hover:brightness-110"
           onClick={() => setIsModalOpen(true)}
         >
           Export
