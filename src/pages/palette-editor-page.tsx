@@ -76,7 +76,7 @@ export const PaletteEditorPage = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4">
       <div className="shrink-0">
         <Button
           onClick={onReset}
@@ -86,7 +86,7 @@ export const PaletteEditorPage = ({
         </Button>
       </div>
 
-      <div className="flex h-full min-h-0 w-full flex-1 items-center justify-center overflow-hidden">
+      <div className="flex h-full min-h-0 w-full min-w-0 flex-1 items-center justify-center overflow-hidden">
         <ToneSheetsContainer
           grids={grids}
           activeSheetIndex={activeIndex}

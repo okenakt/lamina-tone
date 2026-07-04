@@ -145,7 +145,7 @@ export const ToneSheetsContainer = ({
   return (
     <div
       ref={containerRef}
-      className="relative flex h-full w-full items-center overflow-hidden"
+      className="relative flex h-full w-full min-w-0 items-center overflow-hidden"
       onClick={onContainerClick}
       {...pointerProps}
     >
