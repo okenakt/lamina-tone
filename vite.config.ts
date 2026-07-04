@@ -8,6 +8,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
+    // Served from https://okenakt.github.io/lamina-tone/ on GitHub Pages.
+    base: "/lamina-tone/",
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
