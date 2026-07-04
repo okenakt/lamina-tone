@@ -13,17 +13,31 @@ export const ColorPickerPage = ({ onColorSelect }: ColorPickerPageProps) => {
   const [currentColor, setCurrentColor] = useState<Color>(INITIAL_COLOR);
 
   return (
-    <div className="flex w-full max-w-xl flex-col items-center gap-4">
-      <p className="text-center text-sm text-gray-400">
+    <div className="flex w-full flex-col items-center gap-8">
+      <div className="flex flex-col items-center gap-4 text-sm text-gray-500">
+        <p className="text-center font-bold">
+          Lamina Tone builds a perceptually uniform 3D grid of tones across Hue,
+          Lightness, and Chroma.
+        </p>
+        <ol className="list-decimal space-y-1">
+          <li>Pick your starting color with the color picker.</li>
+          <li>
+            Explore your palette by adjusting the ranges and counts of each
+            axis.
+          </li>
+          <li>Export your palette for your project.</li>
+        </ol>
+      </div>
+      <p className="text-center text-sm text-gray-600">
         Pick a starting color or{" "}
         <button
-          className="text-gray-500 underline decoration-gray-300 underline-offset-2 transition-colors hover:text-gray-700 hover:decoration-gray-400"
+          className="underline decoration-gray-300 underline-offset-2 transition-colors hover:text-gray-700 hover:decoration-gray-400"
           onClick={() => setCurrentColor(generateRandomColor())}
         >
           🎲 generate one
         </button>
       </p>
-      <div className="flex flex-col items-center gap-4 md:w-full md:flex-row">
+      <div className="flex max-w-xl flex-col items-center gap-4 md:w-full md:flex-row">
         <div className="w-full max-w-60 shrink-0">
           <ColorPicker color={currentColor} onChange={setCurrentColor} />
         </div>
