@@ -1,4 +1,4 @@
-import { ErrorBoundary } from "@/components";
+import { BuyMeACoffeeButton, ErrorBoundary } from "@/components";
 import "@/index.css";
 import { ColorPickerPage, PaletteEditorPage } from "@/pages";
 import { Color } from "@/types";
@@ -33,11 +33,12 @@ export const App = () => {
           )}
         </div>
 
-        <div className="flex justify-center p-2">
+        <footer className="flex flex-col items-center gap-2 p-4">
+          <BuyMeACoffeeButton />
           <span className="text-xs text-gray-400">
             © 2026 Lamina Tone. All rights reserved.
           </span>
-        </div>
+        </footer>
       </div>
     </ErrorBoundary>
   );
