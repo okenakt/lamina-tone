@@ -1,4 +1,5 @@
 import { BuyMeACoffeeButton, ErrorBoundary } from "@/components";
+import { GitHubLink } from "@/components/ui/github-link";
 import "@/index.css";
 import { ColorPickerPage, PaletteEditorPage } from "@/pages";
 import { Color } from "@/types";
@@ -10,16 +11,22 @@ export const App = () => {
   return (
     <ErrorBoundary>
       <div className="flex min-h-screen flex-col bg-linear-to-br from-gray-50 to-gray-100">
-        <header className="border-b border-gray-200 bg-white p-4 text-center">
-          <h1
-            className="text-2xl text-gray-800 sm:text-3xl"
-            style={{ fontFamily: "'Sacramento', cursive", fontWeight: 400 }}
-          >
-            Lamina Tone
-          </h1>
-          <p className="text-xs text-gray-500">
-            Layered Color Palette Generator
-          </p>
+        <header className="grid grid-cols-[1fr_auto_1fr] items-center border-b border-gray-200 bg-white p-4">
+          <div />
+          <div className="text-center">
+            <h1
+              className="text-2xl text-gray-800 sm:text-3xl"
+              style={{ fontFamily: "'Sacramento', cursive", fontWeight: 400 }}
+            >
+              Lamina Tone
+            </h1>
+            <p className="text-xs text-gray-500">
+              Layered Color Palette Generator
+            </p>
+          </div>
+          <div className="flex justify-end">
+            <GitHubLink />
+          </div>
         </header>
 
         <div className="flex flex-1 justify-center p-8">

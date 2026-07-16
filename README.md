@@ -2,6 +2,8 @@
 
 Lamina Tone is a layered color palette generator with a focus on perceptual uniformity.
 
+**[Try it on GitHub Pages](https://okenakt.github.io/lamina-tone/)**
+
 ## How it works
 
 1. Pick a seed color with the color wheel and lightness/chroma pad, RGB
