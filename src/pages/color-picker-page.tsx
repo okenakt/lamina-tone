@@ -15,9 +15,9 @@ export const ColorPickerPage = ({ onColorSelect }: ColorPickerPageProps) => {
   return (
     <div className="flex w-full flex-col items-center gap-8">
       <div className="flex flex-col items-center gap-4 text-sm text-gray-500">
-        <p className="text-center font-bold">
-          Lamina Tone builds a perceptually uniform 3D grid of tones across Hue,
-          Lightness, and Chroma.
+        <p className="text-center">
+          <span className="font-bold">Lamina Tone</span> builds a perceptually
+          uniform 3D grid across Hue, Lightness, and Chroma.
         </p>
         <ol className="list-decimal space-y-1">
           <li>Pick your starting color with the color picker.</li>
