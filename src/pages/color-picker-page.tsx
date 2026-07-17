@@ -37,8 +37,8 @@ export const ColorPickerPage = ({ onColorSelect }: ColorPickerPageProps) => {
           🎲 generate one
         </button>
       </p>
-      <div className="flex max-w-xl flex-col items-center gap-4 md:w-full md:flex-row">
-        <div className="w-full max-w-60 shrink-0">
+      <div className="flex w-full max-w-2xs flex-col items-center gap-4 md:max-w-2xl md:flex-row">
+        <div className="w-full shrink-0 md:max-w-2xs">
           <ColorPicker color={currentColor} onChange={setCurrentColor} />
         </div>
         <div className="flex w-full flex-col gap-4">
