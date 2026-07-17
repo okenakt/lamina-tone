@@ -113,8 +113,8 @@ export const ColorExportModal = ({ onClose, grids }: ColorExportModalProps) => {
         </div>
 
         <div className="border-b border-gray-200 p-6">
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-2">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
+            <div className="flex items-center gap-2">
               <label className="text-sm font-medium text-gray-700">
                 Structure:
               </label>
@@ -131,7 +131,7 @@ export const ColorExportModal = ({ onClose, grids }: ColorExportModalProps) => {
               </select>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-2">
               <label className="text-sm font-medium text-gray-700">
                 Color:
               </label>
