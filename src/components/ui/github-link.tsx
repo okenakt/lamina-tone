@@ -11,7 +11,7 @@ export const GitHubLink = () => {
       target="_blank"
       rel="noreferrer"
       aria-label="View source on GitHub"
-      className="text-gray-500 transition-colors hover:text-gray-800"
+      className="rounded-[4px] text-ink-3 outline-none transition-colors duration-200 ease-out hover:text-ink focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
     >
       <svg
         viewBox="0 0 24 24"

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Color } from "@/types";
-import { useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 type ColorExportModalProps = {
   onClose: () => void;
@@ -19,6 +19,18 @@ export const ColorExportModal = ({ onClose, grids }: ColorExportModalProps) => {
   const [selectedColorFormat, setSelectedColorFormat] =
     useState<ColorFormat>("hex");
   const [copied, setCopied] = useState(false);
+  const titleId = useId();
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  // Close on Escape and move initial focus to the close control.
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    closeRef.current?.focus();
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
 
   const lines = useMemo<Line[]>(() => {
     const valueLiteral = (color: Color): string =>
@@ -100,30 +112,51 @@ export const ColorExportModal = ({ onClose, grids }: ColorExportModalProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="flex h-[640px] max-h-[90vh] w-[720px] max-w-[95vw] flex-col rounded-lg bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-800">Export Colors</h2>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4"
+      onClick={onClose}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        onClick={(e) => e.stopPropagation()}
+        className="flex h-[640px] max-h-[90vh] w-[720px] max-w-[95vw] flex-col rounded-[12px] border border-rule bg-paper shadow-xl"
+      >
+        <div className="flex items-center justify-between border-b border-rule p-6">
+          <h2
+            id={titleId}
+            className="font-display text-xl font-medium tracking-[-0.01em] text-ink"
+          >
+            Export Colors
+          </h2>
           <button
+            ref={closeRef}
             onClick={onClose}
-            className="text-2xl text-gray-400 hover:text-gray-600"
+            aria-label="Close export dialog"
+            className="flex h-9 w-9 items-center justify-center rounded-[8px] text-2xl text-ink-3 outline-none transition-colors duration-200 ease-out hover:bg-paper-2 hover:text-ink focus-visible:ring-2 focus-visible:ring-focus"
           >
             ×
           </button>
         </div>
 
-        <div className="border-b border-gray-200 p-6">
+        <div className="border-b border-rule p-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-6">
             <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">
+              <label
+                htmlFor={`${titleId}-structure`}
+                className="text-sm font-medium text-ink-2"
+              >
                 Structure:
               </label>
               <select
+                id={`${titleId}-structure`}
                 value={selectedStructure}
                 onChange={(e) =>
                   setSelectedStructure(e.target.value as ExportStructure)
                 }
-                className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                className="rounded-[8px] border border-rule bg-paper px-4 py-2 text-ink outline-none transition-colors duration-200 ease-out hover:border-ink-3 focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-focus"
               >
                 <option value="nested">Nested Object</option>
                 <option value="flat">Flat Object</option>
@@ -132,15 +165,19 @@ export const ColorExportModal = ({ onClose, grids }: ColorExportModalProps) => {
             </div>
 
             <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">
+              <label
+                htmlFor={`${titleId}-format`}
+                className="text-sm font-medium text-ink-2"
+              >
                 Color:
               </label>
               <select
+                id={`${titleId}-format`}
                 value={selectedColorFormat}
                 onChange={(e) =>
                   setSelectedColorFormat(e.target.value as ColorFormat)
                 }
-                className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                className="rounded-[8px] border border-rule bg-paper px-4 py-2 text-ink outline-none transition-colors duration-200 ease-out hover:border-ink-3 focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-focus"
               >
                 <option value="hex">HEX</option>
                 <option value="rgb">RGB</option>
@@ -150,16 +187,14 @@ export const ColorExportModal = ({ onClose, grids }: ColorExportModalProps) => {
         </div>
 
         <div className="flex-1 overflow-hidden p-6">
-          <div className="h-full overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <div className="h-full overflow-auto rounded-[12px] border border-rule bg-paper-2 p-4">
             <div className="w-full font-mono text-sm">
               {lines.map((line, i) => (
                 <div key={i} className="flex items-center gap-6">
-                  <span className="whitespace-pre text-gray-700">
-                    {line.text}
-                  </span>
+                  <span className="whitespace-pre text-ink-2">{line.text}</span>
                   {line.color && (
                     <span
-                      className="ml-auto h-4 w-16 rounded border border-gray-200"
+                      className="ml-auto h-4 w-16 rounded-[4px] border border-rule"
                       style={{ backgroundColor: line.color.hex }}
                     />
                   )}
@@ -169,16 +204,17 @@ export const ColorExportModal = ({ onClose, grids }: ColorExportModalProps) => {
           </div>
         </div>
 
-        <div className="flex justify-end border-t border-gray-200 p-6">
+        <div className="flex justify-end border-t border-rule p-6">
           <Button
             onClick={handleCopy}
-            className={`px-4 py-2 text-sm text-white ${
+            aria-live="polite"
+            className={`px-4 py-2 text-sm ${
               copied
-                ? "bg-green-400 hover:bg-green-500 focus:ring-green-400"
-                : "bg-blue-400 hover:bg-blue-500 focus:ring-blue-400"
+                ? "bg-success text-paper"
+                : "bg-accent text-accent-ink hover:bg-accent-strong"
             }`}
           >
-            {copied ? "Copied!" : "Copy to Clipboard"}
+            {copied ? "Copied ✓" : "Copy to Clipboard"}
           </Button>
         </div>
       </div>

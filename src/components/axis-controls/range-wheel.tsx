@@ -9,6 +9,7 @@ type RangeWheelProps = {
   outer?: number;
   background?: string;
   className?: string;
+  labels?: [string, string]; // accessible names for [start, end] handles
 };
 
 // Clockwise span from start to end.
@@ -24,7 +25,8 @@ const spanCW = (start: number, end: number) =>
 const dimGradient = (start: number, end: number): string | undefined => {
   const span = spanCW(start, end);
   if (span >= 359) return undefined; // full range → dim nothing
-  const DARK = "rgba(0,0,0,0.45)";
+  // Ink-tinted dim (not pure black), matching RangeSlider's overlay.
+  const DARK = "color-mix(in oklch, var(--color-ink) 45%, transparent)";
   if (360 - span >= 359) return DARK; // empty range → dim everything
   const a = (360 - end) % 360;
   const b = (360 - start) % 360;
@@ -47,6 +49,7 @@ export const RangeWheel = ({
   outer = 0.41,
   background,
   className = "",
+  labels,
 }: RangeWheelProps) => {
   const dim = dimGradient(start, end);
   // dim layered over the hue ring (first = topmost; dim is transparent over the
@@ -63,6 +66,7 @@ export const RangeWheel = ({
         inner={inner}
         outer={outer}
         ringStyle={{ background: ring || undefined }}
+        labels={labels}
       />
     </div>
   );

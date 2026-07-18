@@ -8,17 +8,36 @@ const rectGeometry = (
   right: number,
   top: number,
   bottom: number,
-): Geometry => ({
-  valueAt: (r, x, y) => [
-    left + clamp((x - r.left) / r.width) * (right - left),
-    bottom - clamp((y - r.top) / r.height) * (bottom - top),
-  ],
-  placeHandle: ([x, y]) => ({
-    left: `${((x - left) / (right - left)) * 100}%`,
-    top: `${(1 - (y - top) / (bottom - top)) * 100}%`,
-  }),
-  distance: (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]),
-});
+): Geometry => {
+  const stepX = (right - left) / 100;
+  const stepY = (bottom - top) / 100;
+  const pct = (v: number, lo: number, hi: number) =>
+    Math.round(((v - lo) / (hi - lo)) * 100);
+  return {
+    valueAt: (r, x, y) => [
+      left + clamp((x - r.left) / r.width) * (right - left),
+      bottom - clamp((y - r.top) / r.height) * (bottom - top),
+    ],
+    placeHandle: ([x, y]) => ({
+      left: `${((x - left) / (right - left)) * 100}%`,
+      top: `${(1 - (y - top) / (bottom - top)) * 100}%`,
+    }),
+    distance: (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]),
+    nudge: ([x, y], dx, dy, coarse) => {
+      const k = coarse ? 10 : 1;
+      return [
+        clamp(x + dx * stepX * k, left, right),
+        clamp(y + dy * stepY * k, top, bottom),
+      ];
+    },
+    aria: ([x, y]) => ({
+      valuemin: 0,
+      valuemax: 100,
+      valuenow: pct(x, left, right),
+      valuetext: `Chroma ${pct(x, left, right)}%, Lightness ${pct(y, top, bottom)}%`,
+    }),
+  };
+};
 
 type PadProps = {
   values: [number, number][];
@@ -29,6 +48,8 @@ type PadProps = {
   yMin?: number;
   className?: string;
   children?: ReactNode;
+  // Accessible name(s) for the handle(s); enables keyboard operation.
+  labels?: string[];
 };
 
 export const Pad = ({
@@ -40,11 +61,13 @@ export const Pad = ({
   yMin = 0,
   className = "",
   children,
+  labels,
 }: PadProps) => (
   <Track
     geometry={rectGeometry(xMin, xMax, yMin, yMax)}
     values={values}
     onChange={(i, [x, y]) => onChange(i, [x, y])}
+    handleLabels={labels}
     className={`relative h-full w-full cursor-crosshair touch-none overflow-hidden rounded-md select-none ${className}`}
   >
     {children}

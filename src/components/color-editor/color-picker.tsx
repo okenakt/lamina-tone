@@ -89,6 +89,7 @@ export const ColorPicker = ({
       inner={ringInner}
       outer={ringOuter}
       ringStyle={hueRing}
+      labels={["Hue"]}
     >
       <div
         className="absolute"
@@ -104,6 +105,7 @@ export const ColorPicker = ({
           onChange={(_, [c, l]) => commit({ ...lch, c, l })}
           xMax={maxChroma}
           yMax={1}
+          labels={["Chroma and lightness"]}
         >
           <canvas
             ref={canvasRef}

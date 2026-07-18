@@ -14,10 +14,11 @@ export const ColorPickerPage = ({ onColorSelect }: ColorPickerPageProps) => {
 
   return (
     <div className="flex w-full flex-col items-center gap-8">
-      <div className="flex flex-col items-center gap-4 text-sm text-gray-500">
+      <div className="flex flex-col items-center gap-4 text-sm text-ink-2">
         <p className="text-center">
-          <span className="font-bold">Lamina Tone</span> builds a perceptually
-          uniform 3D grid across Hue, Lightness, and Chroma.
+          <span className="font-display font-medium text-ink">Lamina Tone</span>{" "}
+          builds a perceptually uniform 3D grid across Hue, Lightness, and
+          Chroma.
         </p>
         <ol className="list-decimal space-y-1">
           <li>Pick your starting color with the color picker.</li>
@@ -28,10 +29,10 @@ export const ColorPickerPage = ({ onColorSelect }: ColorPickerPageProps) => {
           <li>Export your palette for your project.</li>
         </ol>
       </div>
-      <p className="text-center text-sm text-gray-600">
+      <p className="text-center text-sm text-ink-2">
         Pick a starting color or{" "}
         <button
-          className="underline decoration-gray-300 underline-offset-2 transition-colors hover:text-gray-700 hover:decoration-gray-400"
+          className="rounded-[4px] underline decoration-rule underline-offset-2 outline-none transition-colors duration-200 ease-out hover:text-accent hover:decoration-accent focus-visible:ring-2 focus-visible:ring-focus"
           onClick={() => setCurrentColor(generateRandomColor())}
         >
           🎲 generate one
@@ -47,7 +48,7 @@ export const ColorPickerPage = ({ onColorSelect }: ColorPickerPageProps) => {
         </div>
       </div>
       <Button
-        className="bg-linear-135 from-cyan-500 to-purple-500 text-white hover:brightness-110"
+        className="bg-accent text-accent-ink hover:bg-accent-strong"
         onClick={() => onColorSelect(currentColor)}
       >
         Start →

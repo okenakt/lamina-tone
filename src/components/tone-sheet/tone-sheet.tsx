@@ -38,7 +38,7 @@ export const ToneSheet = React.memo(function ToneSheet({
   if (rows === 0 || cols === 0) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="text-gray-500">No colors to display</div>
+        <div className="text-ink-3">No colors to display</div>
       </div>
     );
   }

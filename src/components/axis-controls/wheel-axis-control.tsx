@@ -43,12 +43,13 @@ export const WheelAxisControl = ({
           end={range.max}
           onChange={onRangeChange}
           background={ringGradient}
+          labels={[`${title} minimum`, `${title} maximum`]}
         />
 
         <div className="items-left flex flex-col justify-center font-mono text-xs">
-          <span className="text-blue-500">{Math.round(range.min)}°</span>
-          <span className="text-gray-400">↓</span>
-          <span className="text-orange-500">{Math.round(range.max)}°</span>
+          <span className="text-accent">{Math.round(range.min)}°</span>
+          <span className="text-ink-3">↓</span>
+          <span className="text-accent-warm">{Math.round(range.max)}°</span>
         </div>
       </div>
     </AxisControl>

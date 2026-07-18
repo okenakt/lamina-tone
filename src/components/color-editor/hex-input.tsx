@@ -8,7 +8,10 @@ type HexInputProps = {
 };
 
 export const HexInput = ({ color, onChange }: HexInputProps) => {
-  const labelColor = color.oklch.l > 0.6 ? "#1f2937" : "#f9fafb";
+  // Readable text over the swatch: dark ink on light colours, light paper on
+  // dark ones. Uses the theme tokens so the field tracks the palette.
+  const labelColor =
+    color.oklch.l > 0.6 ? "var(--color-ink)" : "var(--color-paper)";
   const inputRef = useRef<HTMLInputElement>(null);
   const fieldHex = useRef(color.hex);
 
@@ -22,7 +25,7 @@ export const HexInput = ({ color, onChange }: HexInputProps) => {
 
   return (
     <div
-      className="rounded bg-(--swatch) transition-colors"
+      className="rounded bg-(--swatch) transition-colors duration-200 ease-out"
       style={{ "--swatch": color.hex } as React.CSSProperties}
     >
       <input
@@ -41,7 +44,7 @@ export const HexInput = ({ color, onChange }: HexInputProps) => {
         spellCheck={false}
         maxLength={7}
         aria-label="Hex color"
-        className="w-full rounded p-2 font-mono text-sm text-(--hex-fg) uppercase outline-none focus:bg-white focus:text-gray-900 focus:ring-2 focus:ring-blue-500"
+        className="w-full rounded-[8px] p-2 font-mono text-sm text-(--hex-fg) uppercase outline-none focus:bg-paper focus:text-ink focus-visible:ring-2 focus-visible:ring-focus"
         style={{ "--hex-fg": labelColor } as React.CSSProperties}
       />
     </div>

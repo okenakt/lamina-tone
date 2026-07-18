@@ -1,0 +1,63 @@
+/* Hallmark · design system for Lamina Tone
+ * genre: modern-minimal · vibe: "calm & refined" · designed-as-app
+ * Portable mirror of the tokens declared in src/index.css (@theme).
+ * The app itself reads them through Tailwind v4's @theme; this file exists so
+ * the system can be dropped into another project.
+ */
+:root {
+  /* Surfaces — near-neutral cool paper so generated colours read true */
+  --color-paper: oklch(98.5% 0.003 250);
+  --color-paper-2: oklch(96.5% 0.004 250); /* cards, wells */
+  --color-paper-3: oklch(93.5% 0.006 250); /* hover / pressed surface */
+  --color-rule: oklch(89% 0.006 250); /* hairline borders */
+
+  /* Ink — cool-tinted near-black, three legible steps */
+  --color-ink: oklch(27% 0.012 250); /* primary text */
+  --color-ink-2: oklch(45% 0.012 250); /* secondary text */
+  --color-ink-3: oklch(56% 0.01 250); /* meta text (>= 4.5:1 on paper) */
+
+  /* Accent — restrained slate-blue (hue 250, shared with the neutrals): one
+     token for both solid fills (white text) and accent text/borders on paper.
+     A warm marker for a range's "max" end. Chrome only, never a colour block. */
+  --color-accent: oklch(52% 0.1 250); /* fill (white text) + accent text on paper */
+  --color-accent-strong: oklch(46% 0.11 250); /* hover / pressed */
+  --color-accent-ink: oklch(99% 0 0); /* text on the accent fill */
+  --color-accent-warm: oklch(56% 0.16 45); /* warm "max" endpoint marker */
+  --color-focus: oklch(58% 0.13 250); /* focus ring, >= 3:1 on paper */
+
+  /* Signal colours — one muted step each, readable as text on paper */
+  --color-warn: oklch(52% 0.12 65); /* out-of-gamut notice */
+  --color-success: oklch(52% 0.09 155); /* copy confirmation */
+
+  /* Type — display + body + mono pairing */
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+
+  /* 4-point spacing scale (names mirror Tailwind's own scale in use) */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+
+  /* Type scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+
+  /* Motion — three named easings, short durations */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-short: 200ms;
+  --dur-medium: 300ms;
+
+  --radius-card: 12px;
+  --radius-input: 8px;
+}

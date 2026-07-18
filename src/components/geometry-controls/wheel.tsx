@@ -36,6 +36,16 @@ const circleGeometry = (inner: number, outer: number): Geometry => {
       const r = Math.hypot(x - rect.left - cx, y - rect.top - cx) / rect.width;
       return r >= inner && r <= outer;
     },
+    nudge: ([deg], dx, dy, coarse) => {
+      const dir = dx !== 0 ? dx : dy;
+      return [(deg + dir * (coarse ? 10 : 1) + 360) % 360];
+    },
+    aria: ([deg]) => ({
+      valuemin: 0,
+      valuemax: 360,
+      valuenow: Math.round(deg),
+      valuetext: `${Math.round(deg)} degrees`,
+    }),
   };
 };
 
@@ -47,6 +57,8 @@ type WheelProps = {
   className?: string;
   ringStyle?: CSSProperties;
   children?: ReactNode;
+  // Accessible name(s) for the handle(s); enables keyboard operation.
+  labels?: string[];
 };
 
 export const Wheel = ({
@@ -57,6 +69,7 @@ export const Wheel = ({
   className = "",
   ringStyle,
   children,
+  labels,
 }: WheelProps) => {
   // %-based donut mask: `closest-side` makes the radius half the (square) box,
   // so ratio*200% maps a fraction of the box to that radius (outer 0.5 → 100%,
@@ -70,6 +83,7 @@ export const Wheel = ({
       geometry={circleGeometry(inner, outer)}
       values={values.map((v) => [v])}
       onChange={(i, [v]) => onChange(i, v)}
+      handleLabels={labels}
       className={`relative aspect-square cursor-pointer touch-none select-none ${className}`}
     >
       <div

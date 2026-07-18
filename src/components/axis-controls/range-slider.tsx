@@ -10,6 +10,7 @@ type RangeSliderProps = {
   background?: string;
   className?: string;
   children?: ReactNode; // decoration drawn behind the dim (e.g. gradient strips)
+  labels?: [string, string]; // accessible names for [lo, hi] handles
 };
 
 export const RangeSlider = ({
@@ -21,6 +22,7 @@ export const RangeSlider = ({
   background,
   className = "",
   children,
+  labels,
 }: RangeSliderProps) => {
   const pct = (v: number) => ((v - min) / (max - min)) * 100;
 
@@ -34,16 +36,17 @@ export const RangeSlider = ({
           ? onChange([Math.min(v, hi - gap), hi])
           : onChange([lo, Math.max(v, lo + gap)])
       }
-      barStyle={{ background: background ?? "#e5e7eb" }}
+      barStyle={{ background: background ?? "var(--color-rule)" }}
       className={className}
+      labels={labels}
     >
       {children}
       <div
-        className="pointer-events-none absolute inset-y-0 left-0 rounded-l-full bg-black/40"
+        className="pointer-events-none absolute inset-y-0 left-0 rounded-l-full bg-ink/35"
         style={{ width: `${pct(lo)}%` }}
       />
       <div
-        className="pointer-events-none absolute inset-y-0 right-0 rounded-r-full bg-black/40"
+        className="pointer-events-none absolute inset-y-0 right-0 rounded-r-full bg-ink/35"
         style={{ width: `${100 - pct(hi)}%` }}
       />
     </Slider>

@@ -28,7 +28,7 @@ export const RgbSlider = ({ color, onChange }: RgbSliderProps) => {
     <div className="flex h-full w-full flex-col gap-4">
       {Object.entries(color.rgb).map(([key, value]) => (
         <div key={key} className="flex items-center gap-4">
-          <span className="w-2 text-sm font-medium text-gray-500">
+          <span className="w-2 text-sm font-medium text-ink-2">
             {key.toUpperCase()}
           </span>
           <Slider
@@ -37,16 +37,18 @@ export const RgbSlider = ({ color, onChange }: RgbSliderProps) => {
             max={255}
             className="flex-1"
             barStyle={channelGradient(color.rgb, key as keyof RGB)}
+            labels={[`${key.toUpperCase()} channel`]}
           />
           <input
             type="number"
             min={0}
             max={255}
             value={value}
+            aria-label={`${key.toUpperCase()} channel value`}
             onChange={(e) =>
               setChannel(key as keyof RGB, Number(e.target.value))
             }
-            className="w-14 rounded border border-gray-200 px-1.5 py-1 text-center font-mono text-sm text-gray-700"
+            className="w-14 rounded-[8px] border border-rule px-1.5 py-1 text-center font-mono text-sm text-ink outline-none focus-visible:ring-2 focus-visible:ring-focus"
           />
         </div>
       ))}

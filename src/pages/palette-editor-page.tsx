@@ -25,6 +25,10 @@ const toEngineAxis = (axis: ColorAxis): ColorAxis => ({
   num: axis.num,
 });
 
+// Only Chroma shows this; every SliderAxisControl reserves the row regardless,
+// so the card never resizes when the warning toggles.
+const GAMUT_WARNING = "⚠ Gamut mapping may reduce perceptual uniformity.";
+
 export const PaletteEditorPage = ({
   seedColor,
   onReset,
@@ -80,7 +84,7 @@ export const PaletteEditorPage = ({
       <div className="shrink-0">
         <Button
           onClick={onReset}
-          className="border border-gray-200 px-3 py-1.5 text-sm text-gray-500 hover:border-gray-300 hover:text-gray-700 focus:ring-gray-300"
+          className="border border-rule px-3 py-1.5 text-sm text-ink-2 hover:border-ink-3 hover:text-ink"
         >
           ← Back
         </Button>
@@ -121,18 +125,17 @@ export const PaletteEditorPage = ({
           onSizeChange={(change) => resizeAxis("chroma", change)}
           onRangeChange={(min, max) => setRange("chroma", min, max)}
           createStrips={chromaStrips}
-          message={
-            hasOutOfGamutColors
-              ? "⚠ Gamut mapping may reduce perceptual uniformity."
-              : undefined
-          }
-          messageStyle={{ color: "#b45309" }}
+          message={GAMUT_WARNING}
+          messageStyle={{
+            color: "var(--color-warn)",
+            visibility: hasOutOfGamutColors ? "visible" : "hidden",
+          }}
         />
       </div>
 
       <div className="flex justify-center">
         <Button
-          className="bg-blue-400 text-white hover:brightness-110"
+          className="bg-accent text-accent-ink hover:bg-accent-strong"
           onClick={() => setIsModalOpen(true)}
         >
           Export

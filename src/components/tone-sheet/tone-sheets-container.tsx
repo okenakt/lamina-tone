@@ -80,7 +80,7 @@ const ToneSheetLayer = ({
 
   return (
     <div
-      className="absolute cursor-pointer transition-[left,transform,opacity] duration-300"
+      className="absolute cursor-pointer transition-[left,transform,opacity] duration-300 ease-out"
       style={{
         left: `${left}px`,
         top: `${VERTICAL_OFFSET}px`,

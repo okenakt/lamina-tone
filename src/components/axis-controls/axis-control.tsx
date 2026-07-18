@@ -17,23 +17,25 @@ export const AxisControl = ({
   disabled = false,
   children,
 }: AxisControlProps) => (
-  <div className="flex-1 space-y-2 rounded-lg border border-gray-300 bg-white p-3 shadow-sm">
+  <div className="flex-1 space-y-2 rounded-[12px] border border-rule bg-paper-2 p-3">
     <div className="flex items-center justify-between">
-      <h3 className="text-sm font-medium text-gray-700">{title}</h3>
-      <div className="flex items-center">
+      <h3 className="text-sm font-medium text-ink">{title}</h3>
+      <div className="flex items-center gap-1">
         <Button
           onClick={() => onSizeChange(-1)}
-          className="h-7 w-7 bg-red-400 p-0 text-xs text-white hover:bg-red-500 focus:ring-red-400"
+          aria-label={`Decrease ${title} count`}
+          className="h-7 w-7 bg-paper-3 p-0 text-base text-ink-2 hover:bg-rule hover:text-ink"
           disabled={disabled || size <= AXIS_LIMITS.minSize}
         >
           −
         </Button>
-        <span className="w-8 rounded bg-gray-50 px-2 py-1 text-center font-mono text-sm text-gray-700">
+        <span className="w-8 text-center font-mono text-sm text-ink">
           {size}
         </span>
         <Button
           onClick={() => onSizeChange(1)}
-          className="h-7 w-7 bg-green-400 p-0 text-xs text-white hover:bg-green-500 focus:ring-green-400"
+          aria-label={`Increase ${title} count`}
+          className="h-7 w-7 bg-paper-3 p-0 text-base text-ink-2 hover:bg-rule hover:text-ink"
           disabled={disabled || size >= AXIS_LIMITS.maxSize}
         >
           +
