@@ -12,15 +12,14 @@ export const App = () => {
   return (
     <ErrorBoundary>
       <div className="flex min-h-screen flex-col bg-paper">
-        <header className="grid grid-cols-[1fr_auto_1fr] items-center border-b border-rule bg-paper p-4">
-          <div />
-          <div className="flex items-center justify-center gap-3">
+        <header className="flex items-center justify-between border-b border-rule bg-paper p-4">
+          <div className="flex items-center gap-3">
             <img
               src={iconUrl}
               alt=""
               className="h-10 w-10 shrink-0 sm:h-12 sm:w-12"
             />
-            <div className="text-center">
+            <div>
               <h1 className="font-display text-2xl font-medium tracking-[-0.01em] text-ink sm:text-3xl">
                 Lamina Tone
               </h1>
@@ -29,9 +28,7 @@ export const App = () => {
               </p>
             </div>
           </div>
-          <div className="flex justify-end">
-            <GitHubLink />
-          </div>
+          <GitHubLink />
         </header>
 
         <div className="flex flex-1 justify-center p-8">
