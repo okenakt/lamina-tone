@@ -1,6 +1,6 @@
 import { Color } from "@/types";
 import { copyColorToClipboard } from "@/utils/clipboard";
-import { PointerEvent, RefObject, useCallback, useRef, useState } from "react";
+import { PointerEvent, RefObject, useCallback, useState } from "react";
 
 export const useTooltipState = (
   containerRef: RefObject<HTMLDivElement | null>,
@@ -8,12 +8,9 @@ export const useTooltipState = (
   const [hoveredColor, setHoveredColor] = useState<Color | null>(null);
   const [copiedColor, setCopiedColor] = useState<Color | null>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const onColorHover = useCallback((color: Color | null) => {
     setHoveredColor(color);
-    // Moving onto another cell cancels a stale "Copied!" message.
-    if (color) setCopiedColor(null);
   }, []);
 
   const onColorCopy = useCallback(async (color: Color) => {
@@ -24,7 +21,6 @@ export const useTooltipState = (
       return;
     }
     setCopiedColor(color);
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
   }, []);
 
   const trackPointer = useCallback(
@@ -36,13 +32,16 @@ export const useTooltipState = (
     [containerRef],
   );
 
-  const target = copiedColor ?? hoveredColor;
-  const tooltipProps = target
+  // Visibility follows the pointer alone: leaving a cell always hides the
+  // tooltip. `copiedColor` only flips the message while the pointer is still on
+  // the cell that was just copied.
+  const justCopied = copiedColor !== null && copiedColor === hoveredColor;
+  const tooltipProps = hoveredColor
     ? {
-        color: target,
+        color: hoveredColor,
         position,
-        message: copiedColor ? "Copied!" : "Click to copy",
-        messageStyle: copiedColor
+        message: justCopied ? "Copied!" : "Click to copy",
+        messageStyle: justCopied
           ? { fontWeight: "bold" as const, color: "#4ade80" }
           : undefined,
       }
