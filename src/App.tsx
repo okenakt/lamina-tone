@@ -1,3 +1,4 @@
+import iconUrl from "@/assets/lamina-tone.png";
 import { BuyMeACoffeeButton, ErrorBoundary } from "@/components";
 import { GitHubLink } from "@/components/ui/github-link";
 import "@/index.css";
@@ -13,13 +14,20 @@ export const App = () => {
       <div className="flex min-h-screen flex-col bg-paper">
         <header className="grid grid-cols-[1fr_auto_1fr] items-center border-b border-rule bg-paper p-4">
           <div />
-          <div className="text-center">
-            <h1 className="font-display text-2xl font-medium tracking-[-0.01em] text-ink sm:text-3xl">
-              Lamina Tone
-            </h1>
-            <p className="text-xs text-ink-3">
-              Layered Color Palette Generator
-            </p>
+          <div className="flex items-center justify-center gap-3">
+            <img
+              src={iconUrl}
+              alt=""
+              className="h-10 w-10 shrink-0 sm:h-12 sm:w-12"
+            />
+            <div className="text-center">
+              <h1 className="font-display text-2xl font-medium tracking-[-0.01em] text-ink sm:text-3xl">
+                Lamina Tone
+              </h1>
+              <p className="text-xs text-ink-3">
+                Layered Color Palette Generator
+              </p>
+            </div>
           </div>
           <div className="flex justify-end">
             <GitHubLink />
