@@ -32,7 +32,7 @@ export const ColorPickerPage = ({ onColorSelect }: ColorPickerPageProps) => {
       <p className="text-center text-sm text-ink-2">
         Pick a starting color or{" "}
         <button
-          className="rounded-[4px] underline decoration-rule underline-offset-2 outline-none transition-colors duration-200 ease-out hover:text-accent hover:decoration-accent focus-visible:ring-2 focus-visible:ring-focus"
+          className="rounded-sm underline decoration-rule underline-offset-2 transition-colors duration-200 ease-out outline-none hover:text-accent hover:decoration-accent focus-visible:ring-2 focus-visible:ring-focus"
           onClick={() => setCurrentColor(generateRandomColor())}
         >
           🎲 generate one

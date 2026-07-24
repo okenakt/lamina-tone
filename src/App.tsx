@@ -17,7 +17,9 @@ export const App = () => {
             <h1 className="font-display text-2xl font-medium tracking-[-0.01em] text-ink sm:text-3xl">
               Lamina Tone
             </h1>
-            <p className="text-xs text-ink-3">Layered Color Palette Generator</p>
+            <p className="text-xs text-ink-3">
+              Layered Color Palette Generator
+            </p>
           </div>
           <div className="flex justify-end">
             <GitHubLink />
@@ -37,9 +39,7 @@ export const App = () => {
 
         <footer className="flex flex-col items-center gap-2 p-4">
           <BuyMeACoffeeButton />
-          <span className="text-xs text-ink-3">
-            © 2026 Lamina Tone — made for building palettes in OKLCH
-          </span>
+          <span className="text-xs text-ink-3">© 2026 Lamina Tone</span>
         </footer>
       </div>
     </ErrorBoundary>

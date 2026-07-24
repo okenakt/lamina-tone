@@ -16,7 +16,7 @@ export const ColorCell = React.memo(function ColorCell({
     <button
       type="button"
       aria-label={`Copy ${color.hex}`}
-      className="group relative flex h-full min-h-0 w-full min-w-0 cursor-pointer touch-manipulation items-center justify-center border border-rule outline-none transition-transform duration-200 ease-out hover:scale-105 hover:border-ink active:scale-95 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-focus"
+      className="group border-rule relative flex h-full min-h-0 w-full min-w-0 cursor-pointer touch-manipulation items-center justify-center border transition-transform duration-200 ease-out outline-none hover:scale-105 hover:border-ink focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-focus active:scale-95"
       style={{
         backgroundColor: color.hex,
         transformStyle: "preserve-3d",
