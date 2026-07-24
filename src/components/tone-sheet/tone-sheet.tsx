@@ -1,3 +1,4 @@
+import { CELL_GAP_RATIO } from "@/constants/tone-sheet";
 import { Color } from "@/types";
 import React from "react";
 import { ColorCell } from "./color-cell";
@@ -21,6 +22,9 @@ const calculateCellSize = (
 
 type ToneSheetProps = {
   colors: Color[][];
+  // Sheet box size in px; the grid fills 90% of it, matching the original
+  // 180/200 inset. Driven by the parent so sheets scale with the container.
+  size: number;
   isActive: boolean;
   // Withheld (undefined) for inactive sheets so only the active sheet can
   // drive the tooltip and copy.
@@ -30,6 +34,7 @@ type ToneSheetProps = {
 
 export const ToneSheet = React.memo(function ToneSheet({
   colors,
+  size,
   onColorHover,
   onColorCopy,
 }: ToneSheetProps) {
@@ -43,7 +48,7 @@ export const ToneSheet = React.memo(function ToneSheet({
     );
   }
 
-  const { width, height } = calculateCellSize(rows, cols);
+  const { width, height } = calculateCellSize(rows, cols, size * 0.9);
 
   return (
     <div
@@ -55,7 +60,7 @@ export const ToneSheet = React.memo(function ToneSheet({
         style={{
           gridTemplateColumns: `repeat(${cols}, ${width}px)`,
           gridTemplateRows: `repeat(${rows}, ${height}px)`,
-          gap: "2px",
+          gap: `${size * CELL_GAP_RATIO}px`,
           transform: "skewY(45deg)",
           transformStyle: "preserve-3d",
           transformOrigin: "center center",

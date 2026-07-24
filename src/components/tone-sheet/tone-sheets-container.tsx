@@ -1,40 +1,54 @@
 import { ColorTooltip } from "@/components/ui/color-tooltip";
-import { GRID_CONTROLS, TONESHEET_SIZE } from "@/constants/tone-sheet";
+import {
+  SHEET_GAP_COMPACT_RATIO,
+  SHEET_GAP_NORMAL_RATIO,
+} from "@/constants/tone-sheet";
 import { Color } from "@/types";
 import { useEffect, useRef, useState } from "react";
 import { ToneSheet } from "./tone-sheet";
 import { useTooltipState } from "./use-tooltip-state";
 
-const W = TONESHEET_SIZE.width;
-const H = TONESHEET_SIZE.height;
-const CONTAINER_HEIGHT = (H + W) * 1.1;
-const VERTICAL_OFFSET = CONTAINER_HEIGHT / 2 - H / 2;
+// Sheet box is square (W === H). skewY(45deg) extends each sheet by ±size/2
+// vertically, so the layer band needs size * HEIGHT_FACTOR of vertical room
+// (2 for the skew span, 0.2 for breathing space).
+const HEIGHT_FACTOR = 2.2;
+const MIN_SHEET = 96;
+// Band height used for the first paint, before the ResizeObserver reports the
+// real container size.
+const INITIAL_BAND_HEIGHT = 440;
 
-const COMPACT_SPACING = 10;
-const ENTRY_OFFSET = W;
+// Resolve the sheet size from the available container height. There is no
+// upper bound: the parent owns the sizing, so the container's height alone
+// drives how large the sheets render. A small floor guards against degenerate
+// (near-zero) heights before the first measurement settles.
+function resolveSheetSize(containerHeight: number): number {
+  return Math.max(MIN_SHEET, containerHeight / HEIGHT_FACTOR);
+}
 
 function sheetOffset(
   index: number,
   activeIndex: number,
+  size: number,
   normalSpacing: number,
+  compactSpacing: number,
 ): number {
   if (activeIndex === -1) {
     return index * normalSpacing;
   }
 
   if (index < activeIndex) {
-    return index * COMPACT_SPACING;
+    return index * compactSpacing;
   }
 
   const activePos =
-    activeIndex > 0 ? (activeIndex - 1) * COMPACT_SPACING + W : 0;
+    activeIndex > 0 ? (activeIndex - 1) * compactSpacing + size : 0;
 
   if (index === activeIndex) {
     return activePos;
   }
 
-  // W gap after active sheet, then compact spacing for the rest
-  return activePos + W + (index - activeIndex) * COMPACT_SPACING;
+  // A full sheet-width gap after the active sheet, then compact spacing
+  return activePos + size + (index - activeIndex) * compactSpacing;
 }
 
 type ToneSheetsContainerProps = {
@@ -47,6 +61,8 @@ type ToneSheetsContainerProps = {
 type ToneSheetLayerProps = {
   colors: Color[][];
   index: number;
+  size: number;
+  verticalOffset: number;
   isActive: boolean;
   isDimmed: boolean;
   left: number;
@@ -60,6 +76,8 @@ type ToneSheetLayerProps = {
 const ToneSheetLayer = ({
   colors,
   index,
+  size,
+  verticalOffset,
   isActive,
   isDimmed,
   left,
@@ -76,16 +94,16 @@ const ToneSheetLayer = ({
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  const entryOffset = entryDirection === "left" ? -ENTRY_OFFSET : ENTRY_OFFSET;
+  const entryOffset = entryDirection === "left" ? -size : size;
 
   return (
     <div
       className="absolute cursor-pointer transition-[left,transform,opacity] duration-300 ease-out"
       style={{
         left: `${left}px`,
-        top: `${VERTICAL_OFFSET}px`,
-        width: `${W}px`,
-        height: `${H}px`,
+        top: `${verticalOffset}px`,
+        width: `${size}px`,
+        height: `${size}px`,
         zIndex,
         opacity: hasEntered ? (isDimmed ? 0.3 : 1) : 0,
         transform: `translateX(${hasEntered ? 0 : entryOffset}px)`,
@@ -97,6 +115,7 @@ const ToneSheetLayer = ({
     >
       <ToneSheet
         colors={colors}
+        size={size}
         isActive={isActive}
         onColorHover={isActive ? onColorHover : undefined}
         onColorCopy={isActive ? onColorCopy : undefined}
@@ -114,32 +133,44 @@ export const ToneSheetsContainer = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [initialSheetCount] = useState(() => grids.length);
   const [containerWidth, setContainerWidth] = useState(600);
+  const [containerHeight, setContainerHeight] = useState(INITIAL_BAND_HEIGHT);
   const { tooltipProps, onColorHover, onColorCopy, pointerProps } =
     useTooltipState(containerRef);
 
   useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
     const update = () => {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.getBoundingClientRect().width);
-      }
+      const rect = el.getBoundingClientRect();
+      setContainerWidth(rect.width);
+      setContainerHeight(rect.height);
     };
     update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
   const n = grids.length;
-  const normalSpacing = GRID_CONTROLS.spacing;
+  // Sheet size follows the available container height (capped at the design
+  // maximum), and all geometry derives from it so sheets scale as a whole.
+  const size = resolveSheetSize(containerHeight);
+  const containerBandHeight = size * HEIGHT_FACTOR;
+  const verticalOffset = containerBandHeight / 2 - size / 2;
+  const normalSpacing = size * SHEET_GAP_NORMAL_RATIO;
+  const compactSpacing = size * SHEET_GAP_COMPACT_RATIO;
 
   // Rightmost sheet's offset from startX
   const lastOffset =
-    n > 0 ? sheetOffset(n - 1, activeSheetIndex, normalSpacing) : 0;
-  // Total visual width accounts for skewY ±H/2 extension on each side
-  const totalVisualWidth = n > 0 ? lastOffset + W + H : 0;
-  // Center the group: leftmost content edge (startX - H/2) = (containerWidth - totalVisualWidth) / 2
+    n > 0
+      ? sheetOffset(n - 1, activeSheetIndex, size, normalSpacing, compactSpacing)
+      : 0;
+  // Total visual width accounts for skewY ±size/2 extension on each side
+  const totalVisualWidth = n > 0 ? lastOffset + size + size : 0;
+  // Center the group: leftmost content edge (startX - size/2) = (containerWidth - totalVisualWidth) / 2
   const startX =
     n > 0
-      ? (containerWidth - totalVisualWidth) / 2 + H / 2
+      ? (containerWidth - totalVisualWidth) / 2 + size / 2
       : containerWidth / 2;
 
   return (
@@ -153,19 +184,28 @@ export const ToneSheetsContainer = ({
         className="relative isolate shrink-0"
         style={{
           width: `${containerWidth}px`,
-          height: `${CONTAINER_HEIGHT}px`,
+          height: `${containerBandHeight}px`,
         }}
       >
         {grids.map((colors, index) => {
           const isActive = index === activeSheetIndex;
           const left =
-            startX + sheetOffset(index, activeSheetIndex, normalSpacing);
+            startX +
+            sheetOffset(
+              index,
+              activeSheetIndex,
+              size,
+              normalSpacing,
+              compactSpacing,
+            );
 
           return (
             <ToneSheetLayer
               key={index}
               colors={colors}
               index={index}
+              size={size}
+              verticalOffset={verticalOffset}
               isActive={isActive}
               isDimmed={activeSheetIndex !== -1 && !isActive}
               left={left}
