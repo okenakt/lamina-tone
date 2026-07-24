@@ -135,7 +135,7 @@ export const PaletteEditorPage = ({
 
       <div className="flex justify-center">
         <Button
-          className="bg-accent text-accent-ink hover:bg-accent-strong"
+          className="bg-accent px-4 py-2 text-sm font-medium text-accent-ink hover:bg-accent-strong"
           onClick={() => setIsModalOpen(true)}
         >
           Export

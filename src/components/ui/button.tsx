@@ -5,7 +5,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const BASE_STYLE =
-  "inline-flex touch-manipulation items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 ease-out outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-paper";
+  "inline-flex touch-manipulation items-center justify-center rounded-lg transition-colors duration-200 ease-out outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-paper";
 
 export const Button = ({
   className = "",
