@@ -99,9 +99,9 @@ export const PaletteEditorPage = ({
         />
       </div>
 
-      <div className="flex flex-col items-stretch gap-2 md:flex-row">
+      <div className="flex flex-col gap-2 self-center md:w-full md:max-w-5xl md:flex-row">
         <WheelAxisControl
-          title="Hue (Depth)"
+          title="Hue"
           size={cube.hue.num}
           range={cube.hue.range}
           onSizeChange={(change) => resizeAxis("hue", change)}
@@ -110,7 +110,7 @@ export const PaletteEditorPage = ({
         />
 
         <SliderAxisControl
-          title="Lightness (Vertical)"
+          title="Lightness"
           size={cube.lightness.num}
           range={cube.lightness.range}
           onSizeChange={(change) => resizeAxis("lightness", change)}
@@ -119,7 +119,7 @@ export const PaletteEditorPage = ({
         />
 
         <SliderAxisControl
-          title="Chroma (Horizontal)"
+          title="Chroma"
           size={cube.chroma.num}
           range={cube.chroma.range}
           onSizeChange={(change) => resizeAxis("chroma", change)}

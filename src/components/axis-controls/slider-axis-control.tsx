@@ -34,7 +34,7 @@ export const SliderAxisControl = ({
   messageStyle,
 }: SliderAxisControlProps) => (
   <AxisControl title={title} size={size} onSizeChange={onSizeChange}>
-    <div className="flex w-full flex-col gap-1 pt-4">
+    <div className="flex w-full flex-col gap-1 pt-5">
       <div className="relative h-4 font-mono text-xs text-ink-2">
         <span
           className="absolute -translate-x-1/2 text-accent"

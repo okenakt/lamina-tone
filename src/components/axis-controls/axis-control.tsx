@@ -17,25 +17,25 @@ export const AxisControl = ({
   disabled = false,
   children,
 }: AxisControlProps) => (
-  <div className="flex-1 space-y-2 rounded-[12px] border border-rule bg-paper-2 p-3">
+  <div className="flex-1 space-y-2 rounded-xl border border-rule bg-paper-2 p-3">
     <div className="flex items-center justify-between">
       <h3 className="text-sm font-medium text-ink">{title}</h3>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center">
         <Button
           onClick={() => onSizeChange(-1)}
           aria-label={`Decrease ${title} count`}
-          className="h-7 w-7 bg-paper-3 p-0 text-base text-ink-2 hover:bg-rule hover:text-ink"
+          className="h-7 w-7 bg-paper-3 text-sm text-ink-2 hover:bg-rule hover:text-ink"
           disabled={disabled || size <= AXIS_LIMITS.minSize}
         >
           −
         </Button>
-        <span className="w-8 text-center font-mono text-sm text-ink">
+        <span className="w-6 text-center font-mono text-sm text-ink">
           {size}
         </span>
         <Button
           onClick={() => onSizeChange(1)}
           aria-label={`Increase ${title} count`}
-          className="h-7 w-7 bg-paper-3 p-0 text-base text-ink-2 hover:bg-rule hover:text-ink"
+          className="h-7 w-7 bg-paper-3 text-sm text-ink-2 hover:bg-rule hover:text-ink"
           disabled={disabled || size >= AXIS_LIMITS.maxSize}
         >
           +

@@ -37,7 +37,7 @@ export const WheelAxisControl = ({
       onSizeChange={onSizeChange}
       disabled={disabled}
     >
-      <div className="flex justify-center gap-2 py-1">
+      <div className="flex justify-center gap-2">
         <RangeWheel
           start={range.min}
           end={range.max}
